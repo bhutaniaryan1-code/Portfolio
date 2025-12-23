@@ -15,16 +15,28 @@
         }
 
         /* --- BASE & CURSOR --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; } 
+        * { margin: 0; padding: 0; box-sizing: border-box; } 
+        
+        /* Apply custom cursor only to devices with a mouse */
+        @media (pointer: fine) {
+            * { cursor: none; }
+        }
+
         html { scroll-behavior: smooth; }
         body { 
             font-family: 'Lora', serif; background-color: var(--alabaster); color: var(--obsidian); line-height: 1.9;
             overflow-x: hidden;
         }
 
-        /* Hybrid Cursor Styles */
-        .cursor-dot { width: 4px; height: 4px; background: var(--obsidian); position: fixed; pointer-events: none; border-radius: 50%; z-index: 10001; transform: translate(-50%, -50%); }
-        .af-container { position: fixed; pointer-events: none; z-index: 10000; width: 44px; height: 44px; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s; }
+        /* Hybrid Cursor Styles - Hidden by default, shown via media query */
+        .cursor-dot, .af-container, .light-meter { display: none; }
+
+        @media (pointer: fine) {
+            .cursor-dot { display: block; width: 4px; height: 4px; background: var(--obsidian); position: fixed; pointer-events: none; border-radius: 50%; z-index: 10001; transform: translate(-50%, -50%); }
+            .af-container { display: block; position: fixed; pointer-events: none; z-index: 10000; width: 44px; height: 44px; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s; }
+            .light-meter { display: flex; position: fixed; pointer-events: none; z-index: 10000; left: 35px; top: 0; width: 12px; height: 60px; border-left: 1px solid var(--deep-maroon); flex-direction: column; justify-content: space-between; transform: translateY(-50%); }
+        }
+
         .bracket { position: absolute; width: 10px; height: 10px; border: 1.5px solid var(--deep-maroon); transition: 0.3s; }
         .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
         .tr { top: 0; right: 0; border-left: none; border-bottom: none; }
@@ -32,14 +44,12 @@
         .br { bottom: 0; right: 0; border-left: none; border-top: none; }
         .af-container.locked { width: 22px; height: 22px; }
         .af-container.locked .bracket { border-color: var(--gold-leaf); border-width: 2px; }
-        .light-meter { position: fixed; pointer-events: none; z-index: 10000; left: 35px; top: 0; width: 12px; height: 60px; border-left: 1px solid var(--deep-maroon); display: flex; flex-direction: column; justify-content: space-between; transform: translateY(-50%); }
         .meter-needle { position: absolute; left: -2px; width: 10px; height: 2px; background: var(--gold-leaf); transition: top 0.3s ease; }
 
         /* --- SCROLLYTELLING ANIMATIONS --- */
         .reveal { opacity: 0; transform: translateY(50px); transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* Background Blueprint Drawing Effect */
         .blueprint-svg {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 60vw; opacity: 0.03; z-index: -1; pointer-events: none;
@@ -49,42 +59,69 @@
         .blueprint-svg.active { stroke-dashoffset: 0; }
 
         /* --- SECTIONS --- */
-        header { padding: 30px 6%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; background: rgba(244, 242, 233, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--marble); }
-        .logo { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 900; text-decoration: none; color: var(--deep-maroon); letter-spacing: 2px; }
-        nav a { font-family: 'Montserrat', sans-serif; color: var(--obsidian); text-decoration: none; margin-left: 40px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; }
+        header { padding: 20px 6%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; background: rgba(244, 242, 233, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--marble); }
+        .logo { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 900; text-decoration: none; color: var(--deep-maroon); letter-spacing: 2px; }
+        nav a { font-family: 'Montserrat', sans-serif; color: var(--obsidian); text-decoration: none; margin-left: 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
 
-        #hero-banner { position: relative; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #fff; background-image: url('hero-landscape.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
+        #hero-banner { 
+            position: relative; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #fff; 
+            background-image: url('hero-landscape.jpg'); background-size: cover; background-position: center; 
+            background-attachment: fixed; 
+        }
+
+        /* Fix for iOS background bug */
+        @media (max-width: 768px) {
+            #hero-banner { background-attachment: scroll; }
+        }
+
         #hero-banner::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.6)); z-index: 1; }
-        .hero-content { position: relative; z-index: 2; max-width: 1000px; }
+        .hero-content { position: relative; z-index: 2; max-width: 1000px; padding: 0 20px; }
         .hero-title-large { font-family: 'Cinzel', serif; font-size: clamp(2.5rem, 8vw, 5.5rem); line-height: 1; }
 
-        section { padding: 160px 6%; max-width: 1400px; margin: auto; }
-        .section-label { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 8px; color: var(--gold-leaf); display: block; margin-bottom: 40px; text-align: center; }
+        section { padding: 80px 6%; max-width: 1400px; margin: auto; }
+        @media (min-width: 1024px) { section { padding: 160px 6%; } }
 
-        /* Masonry */
-        .masonry { column-count: 3; column-gap: 40px; }
-        .work-item { display: inline-block; width: 100%; margin-bottom: 40px; background: #fff; padding: 25px; border: 1px solid var(--marble); transition: 0.6s; }
+        .section-label { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 5px; color: var(--gold-leaf); display: block; margin-bottom: 40px; text-align: center; }
+
+        /* Responsive Masonry */
+        .masonry { column-count: 1; column-gap: 20px; }
+        @media (min-width: 600px) { .masonry { column-count: 2; } }
+        @media (min-width: 1024px) { .masonry { column-count: 3; column-gap: 40px; } }
+
+        .work-item { display: inline-block; width: 100%; margin-bottom: 20px; background: #fff; padding: 15px; border: 1px solid var(--marble); transition: 0.6s; }
+        @media (min-width: 1024px) { .work-item { margin-bottom: 40px; padding: 25px; } }
         .work-item:hover { transform: translateY(-15px); }
         .work-item img { width: 100%; display: block; }
 
         /* Chronicle Narrative Blocks */
-        .narrative-block { margin-bottom: 120px; border-left: 2px solid var(--gold-leaf); padding-left: 40px; }
-        .narrative-block h3 { font-family: 'Cinzel', serif; font-size: 2.2rem; color: var(--deep-maroon); margin-bottom: 20px; }
-        .narrative-p { font-size: 1.3rem; max-width: 900px; color: #444; text-align: justify; }
+        .narrative-block { margin-bottom: 80px; border-left: 2px solid var(--gold-leaf); padding-left: 20px; }
+        @media (min-width: 1024px) { .narrative-block { margin-bottom: 120px; padding-left: 40px; } }
+        .narrative-block h3 { font-family: 'Cinzel', serif; font-size: 1.8rem; color: var(--deep-maroon); margin-bottom: 20px; }
+        @media (min-width: 1024px) { .narrative-block h3 { font-size: 2.2rem; } }
+        .narrative-p { font-size: 1.1rem; max-width: 900px; color: #444; text-align: justify; }
+        @media (min-width: 1024px) { .narrative-p { font-size: 1.3rem; } }
 
         /* Accolades */
-        .acc-row { border-bottom: 1px solid var(--marble); padding: 40px 0; display: flex; justify-content: space-between; align-items: center; }
-        .acc-rank { font-family: 'Cinzel', serif; font-size: 2.5rem; color: var(--gold-leaf); font-weight: 700; width: 100px; }
+        .acc-row { border-bottom: 1px solid var(--marble); padding: 30px 0; display: flex; justify-content: space-between; align-items: center; }
+        .acc-rank { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold-leaf); font-weight: 700; width: 80px; }
+        @media (min-width: 1024px) { .acc-rank { font-size: 2.5rem; width: 100px; } }
 
         /* Lightbox */
-        #lb { display: none; position: fixed; z-index: 10500; top:0; left:0; width:100%; height:100%; background: var(--alabaster); justify-content:center; align-items:center; }
-        .lb-name-reveal { font-family: 'Cinzel', serif; font-size: 2.2rem; color: var(--obsidian); letter-spacing: 12px; animation: marbleFade 2s forwards; }
+        #lb { display: none; position: fixed; z-index: 10500; top:0; left:0; width:100%; height:100%; background: var(--alabaster); justify-content:center; align-items:center; flex-direction: column; }
+        .lb-name-reveal { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--obsidian); letter-spacing: 8px; text-align: center; margin-bottom: 20px; animation: marbleFade 2s forwards; }
         @keyframes marbleFade { 0% { opacity: 0; filter: blur(10px); } 50% { opacity: 1; filter: blur(0); } 100% { opacity: 0; filter: blur(10px); } }
-        #lb img { max-width:90%; max-height:85vh; opacity: 0; transition: opacity 1s ease; border: 20px solid #fff; }
+        #lb img { max-width:90%; max-height:75vh; opacity: 0; transition: opacity 1s ease; border: 15px solid #fff; }
+        @media (min-width: 1024px) { #lb img { border: 20px solid #fff; max-height: 85vh; } .lb-name-reveal { font-size: 2.2rem; letter-spacing: 12px; } }
 
+        /* Loader */
         #site-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--alabaster); display: flex; justify-content: center; align-items: center; z-index: 20000; transition: opacity 1.2s; }
-        .loader-name { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--deep-maroon); letter-spacing: 12px; opacity: 0; animation: singlePulse 3s forwards; }
+        .loader-name { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--deep-maroon); letter-spacing: 8px; opacity: 0; animation: singlePulse 3s forwards; text-align: center; }
+        @media (min-width: 1024px) { .loader-name { font-size: 2rem; letter-spacing: 12px; } }
         @keyframes singlePulse { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* Contact Section */
+        .contact-area a { font-size: 1.8rem !important; word-break: break-all; }
+        @media (min-width: 1024px) { .contact-area a { font-size: 3rem !important; } }
     </style>
 </head>
 <body>
@@ -108,7 +145,7 @@
 
 <header>
     <a href="#" class="logo">A. BHUTANI</a>
-    <nav><a href="#work">Archive</a><a href="#history">Chronicle</a><a href="#contact">Inquire</a></nav>
+    <nav><a href="#work">Archive</a><a href="#history">Chronicle</a></nav>
 </header>
 
 <div id="hero-banner">
@@ -179,20 +216,21 @@
     <div class="acc-row"><div class="acc-rank">3RD</div><div><h4>Dual Perception (AI)</h4><p>Atom XLRI Delhi • Feb 2025</p></div></div>
 </section>
 
-<div class="contact-area reveal" id="contact" style="text-align:center; padding: 150px 6%;">
+<div class="contact-area reveal" id="contact" style="text-align:center; padding: 100px 6%;">
     <a href="mailto:bhutaniaryan1@gmail.com" class="contact-link" style="font-family:'Cinzel'; color:var(--deep-maroon); font-size:3rem; text-decoration:none; border-bottom:2px solid var(--gold-leaf);">bhutaniaryan1@gmail.com</a>
-    <p style="margin-top:40px; text-transform:uppercase; letter-spacing:4px; font-family:'Montserrat';">Gurugram • Delhi NCR • @aryan.bhutani06</p>
+    <p style="margin-top:40px; text-transform:uppercase; letter-spacing:4px; font-family:'Montserrat'; font-size:0.7rem;">Gurugram • Delhi NCR • @aryan.bhutani06</p>
 </div>
 
 <div id="lb"><div class="lb-reveal-container"><div class="lb-name-reveal">ARYAN BHUTANI</div></div><img src="" id="lb-img"></div>
 
 <script>
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+
     // 1. SCROLLYTELLING OBSERVER
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
-                // Trigger Background Blueprint Animation
                 if(entry.target.id === 'work' || entry.target.id === 'history') {
                     document.getElementById('bg-schematic').classList.add('active');
                 }
@@ -202,44 +240,52 @@
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // 2. HYBRID CURSOR
-    const dot = document.querySelector('.cursor-dot');
-    const af = document.querySelector('.af-container');
-    const needle = document.getElementById('needle');
-    let mouse = { x: 0, y: 0 }, dotPos = { x: 0, y: 0 }, afPos = { x: 0, y: 0 };
+    // 2. HYBRID CURSOR (Desktop only)
+    if (!isTouch) {
+        const dot = document.querySelector('.cursor-dot');
+        const af = document.querySelector('.af-container');
+        const needle = document.getElementById('needle');
+        let mouse = { x: 0, y: 0 }, dotPos = { x: 0, y: 0 }, afPos = { x: 0, y: 0 };
 
-    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
-    function updateCursor() {
-        dotPos.x += (mouse.x - dotPos.x) * 0.3; dotPos.y += (mouse.y - dotPos.y) * 0.3;
-        dot.style.left = `${dotPos.x}px`; dot.style.top = `${dotPos.y}px`;
-        afPos.x += (mouse.x - afPos.x) * 0.15; afPos.y += (mouse.y - afPos.y) * 0.15;
-        af.style.left = `${afPos.x}px`; af.style.top = `${afPos.y}px`;
-        requestAnimationFrame(updateCursor);
+        function updateCursor() {
+            dotPos.x += (mouse.x - dotPos.x) * 0.3; dotPos.y += (mouse.y - dotPos.y) * 0.3;
+            dot.style.left = `${dotPos.x}px`; dot.style.top = `${dotPos.y}px`;
+            afPos.x += (mouse.x - afPos.x) * 0.15; afPos.y += (mouse.y - afPos.y) * 0.15;
+            af.style.left = `${afPos.x}px`; af.style.top = `${afPos.y}px`;
+            requestAnimationFrame(updateCursor);
+        }
+        updateCursor();
+
+        window.addEventListener('scroll', () => {
+            const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            needle.style.top = `${scrollPercent * 100}%`;
+        });
+
+        document.querySelectorAll('.work-item, a, button').forEach(el => {
+            el.onmouseenter = () => af.classList.add('locked');
+            el.onmouseleave = () => af.classList.remove('locked');
+        });
     }
-    updateCursor();
-
-    window.addEventListener('scroll', () => {
-        const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-        needle.style.top = `${scrollPercent * 100}%`;
-    });
-
-    document.querySelectorAll('.work-item, a, button').forEach(el => {
-        el.onmouseenter = () => af.classList.add('locked');
-        el.onmouseleave = () => af.classList.remove('locked');
-    });
 
     // 3. LOADERS & LIGHTBOX
+    // Forced 5 second site loader
     window.addEventListener('load', () => setTimeout(() => {
         document.getElementById('site-loader').style.opacity = '0';
         setTimeout(() => document.getElementById('site-loader').style.visibility = 'hidden', 1200);
-    }, 3000));
+    }, 5000));
 
     const lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img');
     document.querySelectorAll('.open-lb').forEach(img => {
         img.onclick = () => {
-            lb.style.display = 'flex'; lbImg.style.opacity = '0';
-            setTimeout(() => { lbImg.src = img.src; lbImg.onload = () => lbImg.style.opacity = '1'; }, 2000);
+            lb.style.display = 'flex'; 
+            lbImg.style.opacity = '0';
+            // Forced 2 second lightbox loader
+            setTimeout(() => { 
+                lbImg.src = img.src; 
+                lbImg.onload = () => lbImg.style.opacity = '1'; 
+            }, 2000);
             document.body.style.overflow = 'hidden';
         };
     });
